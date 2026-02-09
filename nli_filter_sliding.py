@@ -129,6 +129,7 @@ def main():
 
             out_record = {
                 "stringID": sid,
+                "source": source,
                 "facts_entailed": entailed
             }
 
