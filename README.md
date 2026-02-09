@@ -20,3 +20,11 @@ python extract_atomic_facts.py \
   --input data/pubmed_500.json \
   --output outputs/pubmed_atomic_facts.jsonl
 ```
+## NLI filtering
+```bash
+python nli_filter_facts.py \
+  --pubmed data/pubmed_500.json \
+  --atomic_facts outputs/pubmed_atomic_facts.jsonl \
+  --output outputs/pubmed_facts_entailed.jsonl \
+  --threshold 0.5
+```
