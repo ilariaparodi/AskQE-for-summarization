@@ -29,7 +29,17 @@ python nli_filter_facts.py \
   --threshold 0.5
 ```
 ## Question Generation
+```bash
 python generate_questions.py \
   --input pubmed_facts_entailed.jsonl \
   --output pubmed_questions_generation.jsonl
+```
+# Question Answering
+```bash
+python question_answering.py \
+  --pubmed pubmed_data.json \
+  --summaries summaries.json \
+  --questions pubmed_questions_generation.jsonl \
+  --output pubmed_qa_results.jsonl
+```
 
