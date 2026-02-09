@@ -11,20 +11,25 @@ pip install -r requirements.txt
 ### Usage
 ```bash
 python summarize_pubmed.py \
-  --input data/pubmed_500.json \
-  --output outputs/pubmed_distilbart_summaries.jsonl
+  --input dpubmed_data.json \
+  --output pubmed_distilbart_summaries.jsonl
 ```
 ## Fact extraction
 ```bash
 python extract_atomic_facts.py \
-  --input data/pubmed_500.json \
-  --output outputs/pubmed_atomic_facts.jsonl
+  --input pubmed_data.json \
+  --output pubmed_atomic_facts.jsonl
 ```
 ## NLI filtering
 ```bash
 python nli_filter_facts.py \
-  --pubmed data/pubmed_500.json \
-  --atomic_facts outputs/pubmed_atomic_facts.jsonl \
-  --output outputs/pubmed_facts_entailed.jsonl \
+  --pubmed data/pubmed_data.json \
+  --atomic_facts pubmed_atomic_facts.jsonl \
+  --output pubmed_facts_entailed.jsonl \
   --threshold 0.5
 ```
+## Question Generation
+python generate_questions.py \
+  --input pubmed_facts_entailed.jsonl \
+  --output pubmed_questions_generation.jsonl
+
