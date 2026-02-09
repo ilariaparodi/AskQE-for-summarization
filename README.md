@@ -4,13 +4,19 @@
 ## PubMed Summarization with DistilBART
 This script generates abstractive summaries for PubMed articles using `sshleifer/distilbart-cnn-12-6`.
 
-## Requirements
+### Requirements
 ```bash
 pip install -r requirements.txt
 ```
-## Usage
+### Usage
 ```bash
 python summarize_pubmed.py \
   --input data/pubmed_500.json \
   --output outputs/pubmed_distilbart_summaries.jsonl
+```
+## Fact extraction
+```bash
+python extract_atomic_facts.py \
+  --input data/pubmed_500.json \
+  --output outputs/pubmed_atomic_facts.jsonl
 ```
