@@ -20,7 +20,7 @@ def parse_args():
     return parser.parse_args()
 
 
-QG_PROMPT = """Task: You will be given an English biomedical article and a list of atomic facts, which are short sentences conveying one piece of information. Your goal is to generate a list of relevant questions based on the sentence. Output the list of questions in Python list format without giving any additional explanation. Do not output as code format (```python```).
+QG_PROMPT = """Task: You will be given an English article and a list of atomic facts, which are short sentences conveying one piece of information. Your goal is to generate a list of relevant questions based on the sentence. Output the list of questions in Python list format without giving any additional explanation. Do not output as code format (```python```).
 
 *** Example Starts ***
 Article: Tardive dystonia is characterized by sustained involuntary muscle contractions. It occurs in approximately 3% of patients with long-term antipsychotic exposure.
