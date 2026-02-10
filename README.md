@@ -38,7 +38,7 @@ python generate_questions.py \
 ```bash
 python question_answering.py \
   --pubmed pubmed_data.json \
-  --summaries summaries.json \
+  --summaries pubmed_distilbart_summaries.jsonl \
   --questions pubmed_questions_generation.jsonl \
   --output pubmed_qa_results.jsonl
 ```
