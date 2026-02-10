@@ -1,26 +1,34 @@
 # AskQE-for-summarization
- Adaptation of the AskQE framework to the task of summarization, rather than machine translation. We aim to evaluate whether the key facts contained in a document are retained in the summary. 
 
-## PubMed Summarization with DistilBART
+Adaptation of the AskQE framework to the task of summarization, rather than machine translation. This repository provides scripts to:
+- generate abstractive summaries for PubMed articles,
+- extract atomic facts from documents,
+- filter facts via NLI models,
+- generate questions from facts,
+- run question-answering to evaluate whether summaries retain key facts.
+
+Purpose: evaluate whether key facts in source documents are preserved in generated summaries.
+
+### PubMed Summarization with DistilBART
 This script generates abstractive summaries for PubMed articles using `sshleifer/distilbart-cnn-12-6`.
 
-### Requirements
+Requirements:
 ```bash
 pip install -r requirements.txt
 ```
-### Usage
+Usage:
 ```bash
 python summarize_pubmed.py \
   --input dpubmed_data.json \
   --output pubmed_distilbart_summaries.jsonl
 ```
-## Fact extraction
+### Fact extraction
 ```bash
 python extract_atomic_facts.py \
   --input pubmed_data.json \
   --output pubmed_atomic_facts.jsonl
 ```
-## NLI filtering
+### NLI filtering
 ```bash
 python nli_filter_facts.py \
   --pubmed data/pubmed_data.json \
@@ -34,7 +42,7 @@ python generate_questions.py \
   --input pubmed_facts_entailed.jsonl \
   --output pubmed_questions_generation.jsonl
 ```
-# Question Answering
+### Question Answering
 ```bash
 python question_answering.py \
   --pubmed pubmed_data.json \
