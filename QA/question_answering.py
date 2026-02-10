@@ -44,7 +44,7 @@ Answers:
 
 def run_llm(prompt, tokenizer, model, max_new_tokens):
     messages = [
-        {"role": "system", "content": "You are a careful biomedical QA assistant."},
+        {"role": "system", "content": "You are a helpful biomedical QA assistant."},
         {"role": "user", "content": prompt},
     ]
 
@@ -63,11 +63,7 @@ def run_llm(prompt, tokenizer, model, max_new_tokens):
             eos_token_id=tokenizer.eos_token_id,
         )
 
-    return tokenizer.decode(
-        outputs[0][inputs["input_ids"].shape[-1]:],
-        skip_special_tokens=True
-    ).strip()
-
+    return tokenizer.decode(outputs[0][inputs["input_ids"].shape[-1]:],skip_special_tokens=True).strip()
 
 def parse_answers(raw):
     try:
@@ -77,7 +73,6 @@ def parse_answers(raw):
     except Exception:
         pass
 
-    # fallback: one answer per line
     return [
         line.strip("-• ").strip()
         for line in raw.split("\n")
@@ -87,7 +82,6 @@ def parse_answers(raw):
 
 def main():
     args = parse_args()
-
     model_id = "Qwen/Qwen2.5-3B-Instruct"
 
     tokenizer = AutoTokenizer.from_pretrained(model_id)
@@ -133,29 +127,13 @@ def main():
             q_str = json.dumps(questions, ensure_ascii=False)
 
             # SOURCE QA
-            prompt_src = QA_PROMPT.format(
-                text=pubmed.get(sid, ""),
-                questions=q_str
-            )
-            raw_src = run_llm(
-                prompt_src,
-                tokenizer,
-                model,
-                args.max_new_tokens
-            )
+            prompt_src = QA_PROMPT.format(text=pubmed.get(sid, ""),questions=q_str)
+            raw_src = run_llm(prompt_src,tokenizer,model,args.max_new_tokens)
             answers_src = parse_answers(raw_src)
 
             # SUMMARY QA
-            prompt_sum = QA_PROMPT.format(
-                text=summaries.get(sid, ""),
-                questions=q_str
-            )
-            raw_sum = run_llm(
-                prompt_sum,
-                tokenizer,
-                model,
-                args.max_new_tokens
-            )
+            prompt_sum = QA_PROMPT.format(text=summaries.get(sid, ""),questions=q_str)
+            raw_sum = run_llm(prompt_sum,tokenizer,model,args.max_new_tokens)
             answers_sum = parse_answers(raw_sum)
 
             fout.write(json.dumps({
@@ -170,7 +148,6 @@ def main():
 
             if torch.cuda.is_available():
                 torch.cuda.empty_cache()
-
 
 if __name__ == "__main__":
     main()
