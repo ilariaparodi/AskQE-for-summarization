@@ -41,7 +41,7 @@ def generate_questions(article, facts, tokenizer, model, max_new_tokens):
     )
 
     messages = [
-        {"role": "system", "content": "You are a careful scientific evaluator."},
+        {"role": "system", "content": "You are a helpful assistant."},
         {"role": "user", "content": prompt},
     ]
 
