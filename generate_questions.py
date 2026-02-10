@@ -65,7 +65,6 @@ def generate_questions(article, facts, tokenizer, model, max_new_tokens):
         skip_special_tokens=True
     ).strip()
 
-    # Robust parsing: try Python list first
     try:
         parsed = ast.literal_eval(raw)
         if isinstance(parsed, list):
@@ -77,7 +76,6 @@ def generate_questions(article, facts, tokenizer, model, max_new_tokens):
     except Exception:
         pass
 
-    # Fallback: one question per line
     return [line.strip() for line in raw.split("\n") if "?" in line]
 
 
@@ -121,11 +119,10 @@ def main():
                 "questions": questions
             }, ensure_ascii=False) + "\n")
 
-            print(sid, "→", len(questions), "questions")
+            print(sid, ":", len(questions), "questions")
 
             if torch.cuda.is_available():
                 torch.cuda.empty_cache()
-
 
 if __name__ == "__main__":
     main()
