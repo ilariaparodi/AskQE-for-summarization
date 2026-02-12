@@ -60,10 +60,7 @@ def generate_questions(article, facts, tokenizer, model, max_new_tokens):
             eos_token_id=tokenizer.eos_token_id
         )
 
-    raw = tokenizer.decode(
-        outputs[0][inputs["input_ids"].shape[-1]:],
-        skip_special_tokens=True
-    ).strip()
+    raw = tokenizer.decode(outputs[0][inputs["input_ids"].shape[-1]:],skip_special_tokens=True).strip()
 
     try:
         parsed = ast.literal_eval(raw)
@@ -77,7 +74,6 @@ def generate_questions(article, facts, tokenizer, model, max_new_tokens):
         pass
 
     return [line.strip() for line in raw.split("\n") if "?" in line]
-
 
 def main():
     args = parse_args()
@@ -103,9 +99,9 @@ def main():
             source = obj.get("source")
             facts = obj.get("facts_entailed", [])
 
-            if not source or not facts:
+            if not source:
                 continue
-
+                
             questions = generate_questions(
                 article=source,
                 facts=facts,
