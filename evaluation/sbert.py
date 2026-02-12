@@ -5,8 +5,6 @@ import torch.nn.functional as F
 from transformers import AutoTokenizer, AutoModel
 from tqdm import tqdm
 
-NOT_FOUND = "NOT_FOUND"
-
 def mean_pooling(model_output, attention_mask):
     token_embeddings = model_output[0]
     input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
@@ -41,9 +39,9 @@ def main(input_file="pubmed_qa_results.jsonl", output_file="pubmed_sbert.jsonl")
 
             for pred, ref in zip(preds, refs):
 
-                if pred == NOT_FOUND and ref == NOT_FOUND:
+                if pred == "NOT_FOUND" and ref == "NOT_FOUND":
                     continue
-                if pred == NOT_FOUND or ref == NOT_FOUND:
+                if pred == "NOT_FOUND" or ref == "NOT_FOUND":
                     scores.append({"cos_sim": 0.0})
                     cos_list.append(0.0)
                     continue
