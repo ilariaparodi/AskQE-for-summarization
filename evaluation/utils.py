@@ -3,9 +3,6 @@ import string
 from collections import Counter
 from typing import Union
 
-
-NOT_FOUND = "NOT_FOUND"
-
 def normalize_answer(s: Union[str]):
     def remove_articles(text):
         return re.sub(r"\b(a|an|the)\b", " ", text)
