@@ -9,6 +9,30 @@ Adaptation of the AskQE framework to the task of summarization, rather than mach
 
 Purpose: evaluate whether key facts in source documents are preserved in generated summaries.
 
+## Dataset
+
+We use a subset of the```ccdv/pubmed-summarization``` dataset.
+
+Each instance originally contains:
+
+- article: full paper body
+
+- abstract: gold summary
+
+For methodological and computational reasons, we retain only the first 800 tokens of each article. Summaries are generated from this truncated input to ensure alignment between source and summary.
+
+## Models Used
+
+Summarization: ```sshleifer/distilbart-cnn-12-6```
+
+Atomic Fact Extraction / QG / QA: ```Qwen2.5-3B-Instruct```
+
+NLI Filtering: ```roberta-large-mnli```
+
+Semantic Similarity: ```sentence-transformers/all-MiniLM-L6-v2```
+
+## Structure
+
 ### PubMed Summarization with DistilBART
 This script generates abstractive summaries for PubMed articles using `sshleifer/distilbart-cnn-12-6`.
 
@@ -18,36 +42,47 @@ pip install -r requirements.txt
 ```
 Usage:
 ```bash
-python summarize_pubmed.py \
-  --input dpubmed_data.json \
-  --output pubmed_distilbart_summaries.jsonl
+python data/summaries.py \
+  --input data/pubmed_articles.json \
+  --output data/summaries.jsonl
 ```
 ### Fact extraction
 ```bash
-python extract_atomic_facts.py \
-  --input pubmed_data.json \
-  --output pubmed_atomic_facts.jsonl
+python atomic_facts/atomic_facts.py \
+  --input data/pubmed_articles.json \
+  --output atomic_facts/pubmed_atomic_facts.jsonl
 ```
 ### NLI filtering
 ```bash
-python nli_filter_facts.py \
-  --pubmed data/pubmed_data.json \
-  --atomic_facts pubmed_atomic_facts.jsonl \
-  --output pubmed_facts_entailed.jsonl \
-  --threshold 0.5
+python NLI/nli_filtering.py \
+  --pubmed data/pubmed_articles.json \
+  --atomic_facts atomic_facts/pubmed_atomic_facts.jsonl \
+  --output NLI/pubmed_facts_entailed.jsonl
 ```
 ### Question Generation
 ```bash
-python generate_questions.py \
-  --input pubmed_facts_entailed.jsonl \
-  --output pubmed_questions_generation.jsonl
+python QG/generate_questions.py \
+  --input NLI/pubmed_facts_entailed.jsonl \
+  --output QG/pubmed_questions_generated.jsonl
 ```
 ### Question Answering
 ```bash
-python question_answering.py \
-  --pubmed pubmed_data.json \
-  --summaries pubmed_distilbart_summaries.jsonl \
-  --questions pubmed_questions_generation.jsonl \
-  --output pubmed_qa_results.jsonl
+python QA/question_answering.py \
+  --pubmed data/pubmed_articles.json \
+  --summaries data/summaries.jsonl \
+  --questions QG/pubmed_questions_generated.jsonl \
+  --output QA/pubmed_answers.jsonl
 ```
-
+### Evaluation
+#### Lexical metrics
+```bash
+python evaluation/string_comparison.py \
+  --input QA/pubmed_answers.jsonl \
+  --output evaluation/pubmed_string_metrics.jsonl
+```
+#### Semantic similarity (SBERT)
+```bash
+python evaluation/sbert.py \
+  --input QA/pubmed_answers.jsonl \
+  --output evaluation/pubmed_sbert.jsonl
+```
