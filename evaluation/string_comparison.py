@@ -16,7 +16,7 @@ def bleu_score(pred, ref, normalize=True):
         ref = normalize_answer(ref)
     return sacrebleu.sentence_bleu(pred, [ref]).score
 
-def main(input_file="pubmed_qa_results.jsonl", output_file="pubmed_string_metrics.jsonl"):
+def main(input_file="pubmed_answers.jsonl", output_file="pubmed_string_metrics.jsonl"):
     with open(input_file, "r", encoding="utf-8") as fin, \
          open(output_file, "w", encoding="utf-8") as fout:
 
