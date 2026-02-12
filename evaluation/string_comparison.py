@@ -2,7 +2,7 @@ import json
 import os
 from tqdm import tqdm
 import sacrebleu
-from utils import (normalize_answer, f1_score, exact_match, NOT_FOUND)
+from utils import (normalize_answer, f1_score, exact_match)
 
 def chrf_score(pred, ref, normalize=True):
     if normalize:
@@ -33,9 +33,9 @@ def main(input_file="pubmed_qa_results.jsonl", output_file="pubmed_string_metric
             f1s, ems, chrfs, bleus = [], [], [], []
 
             for pred, ref in zip(preds, refs):
-                if pred == NOT_FOUND and ref == NOT_FOUND:
+                if pred == "NOT_FOUND" and ref == "NOT_FOUND":
                     continue
-                if pred == NOT_FOUND or ref == NOT_FOUND:
+                if pred == "NOT_FOUND" or ref == "NOT_FOUND":
                     row_scores.append({
                         "f1": 0.0,
                         "em": False,
