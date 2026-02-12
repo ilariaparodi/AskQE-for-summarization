@@ -1,8 +1,26 @@
 import json
-import os
+import argparse
 from tqdm import tqdm
 import sacrebleu
-from utils import (normalize_answer, f1_score, exact_match)
+from utils import normalize_answer, f1_score, exact_match
+
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Compute lexical string-based metrics (F1, EM, chrF, BLEU)"
+    )
+    parser.add_argument(
+        "--input",
+        type=str,
+        required=True,
+        help="Input JSONL file with QA results"
+    )
+    parser.add_argument(
+        "--output",
+        type=str,
+        required=True,
+        help="Output JSONL file with string comparison metrics"
+    )
+    return parser.parse_args()
 
 def chrf_score(pred, ref, normalize=True):
     if normalize:
@@ -16,15 +34,17 @@ def bleu_score(pred, ref, normalize=True):
         ref = normalize_answer(ref)
     return sacrebleu.sentence_bleu(pred, [ref]).score
 
-def main(input_file="pubmed_answers.jsonl", output_file="pubmed_string_metrics.jsonl"):
-    with open(input_file, "r", encoding="utf-8") as fin, \
-         open(output_file, "w", encoding="utf-8") as fout:
+def main():
+    args = parse_args()
+
+    with open(args.input, "r", encoding="utf-8") as fin, \
+         open(args.output, "w", encoding="utf-8") as fout:
 
         for line in tqdm(fin):
             data = json.loads(line)
 
             preds = data.get("answers_summary", [])
-            refs  = data.get("answers_source", [])
+            refs = data.get("answers_source", [])
 
             if not preds or not refs or len(preds) != len(refs):
                 continue
@@ -33,8 +53,10 @@ def main(input_file="pubmed_answers.jsonl", output_file="pubmed_string_metrics.j
             f1s, ems, chrfs, bleus = [], [], [], []
 
             for pred, ref in zip(preds, refs):
+
                 if pred == "NOT_FOUND" and ref == "NOT_FOUND":
                     continue
+
                 if pred == "NOT_FOUND" or ref == "NOT_FOUND":
                     row_scores.append({
                         "f1": 0.0,
@@ -66,12 +88,12 @@ def main(input_file="pubmed_answers.jsonl", output_file="pubmed_string_metrics.j
                 bleus.append(bleu)
 
             data["string_scores"] = row_scores
-            data["avg_f1"]   = sum(f1s) / len(f1s) if f1s else None
-            data["avg_em"]   = sum(ems) / len(ems) if ems else None
+            data["avg_f1"] = sum(f1s) / len(f1s) if f1s else None
+            data["avg_em"] = sum(ems) / len(ems) if ems else None
             data["avg_chrf"] = sum(chrfs) / len(chrfs) if chrfs else None
             data["avg_bleu"] = sum(bleus) / len(bleus) if bleus else None
 
             fout.write(json.dumps(data, ensure_ascii=False) + "\n")
-
+            
 if __name__ == "__main__":
     main()
