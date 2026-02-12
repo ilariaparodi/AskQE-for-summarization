@@ -96,11 +96,12 @@ def main():
         pubmed = {ex["stringID"]: ex["source"] for ex in json.load(f)}
 
     # Load summaries
+    summaries = {}
+
     with open(args.summaries, "r", encoding="utf-8") as f:
-        summaries = {
-            ex["stringID"]: ex["summary_distilbart"]
-            for ex in json.load(f)
-        }
+        for line in f:
+            ex = json.loads(line)
+            summaries[ex["stringID"]] = ex["summary_distilbart"]
 
     os.makedirs(os.path.dirname(args.output), exist_ok=True)
 
