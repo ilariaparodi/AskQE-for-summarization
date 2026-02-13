@@ -33,7 +33,6 @@ Atomic facts: {atomic_facts}
 Questions:
 """
 
-
 def generate_questions(article, facts, tokenizer, model, max_new_tokens):
     prompt = QG_PROMPT.format(
         article=article.strip(),
@@ -45,7 +44,7 @@ def generate_questions(article, facts, tokenizer, model, max_new_tokens):
         {"role": "user", "content": prompt},
     ]
 
-    inputs = tokenizer.apply_chat_template(
+    input_ids = tokenizer.apply_chat_template(
         messages,
         add_generation_prompt=True,
         return_tensors="pt"
@@ -53,17 +52,19 @@ def generate_questions(article, facts, tokenizer, model, max_new_tokens):
 
     with torch.no_grad():
         outputs = model.generate(
-            input_ids=inputs["input_ids"],
-            attention_mask=inputs["attention_mask"],
+            input_ids=input_ids,
             max_new_tokens=max_new_tokens,
             do_sample=False,
-            eos_token_id=tokenizer.eos_token_id
+            eos_token_id=tokenizer.eos_token_id,
         )
 
-    raw = tokenizer.decode(outputs[0][inputs["input_ids"].shape[-1]:],skip_special_tokens=True).strip()
+    response = tokenizer.decode(
+        outputs[0][input_ids.shape[-1]:],
+        skip_special_tokens=True
+    ).strip()
 
     try:
-        parsed = ast.literal_eval(raw)
+        parsed = ast.literal_eval(response)
         if isinstance(parsed, list):
             return [
                 q.strip()
@@ -73,7 +74,7 @@ def generate_questions(article, facts, tokenizer, model, max_new_tokens):
     except Exception:
         pass
 
-    return [line.strip() for line in raw.split("\n") if "?" in line]
+    return [line.strip() for line in response.split("\n") if "?" in line]
 
 def main():
     args = parse_args()
