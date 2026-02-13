@@ -6,7 +6,6 @@ import torch
 from tqdm import tqdm
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
-
 def parse_args():
     parser = argparse.ArgumentParser(
         description="Question Answering over source and summary texts using Qwen2.5-3B-Instruct"
@@ -21,7 +20,6 @@ def parse_args():
                         help="Output JSONL file with QA results")
     parser.add_argument("--max_new_tokens", type=int, default=256)
     return parser.parse_args()
-
 
 QA_PROMPT = """You are answering factual questions using ONLY the provided text.
 
@@ -41,14 +39,13 @@ Questions:
 Answers:
 """
 
-
 def run_llm(prompt, tokenizer, model, max_new_tokens):
     messages = [
-        {"role": "system", "content": "You are a helpful biomedical QA assistant."},
+        {"role": "system", "content": "You are a helpful QA assistant."},
         {"role": "user", "content": prompt},
     ]
 
-    inputs = tokenizer.apply_chat_template(
+    input_ids = tokenizer.apply_chat_template(
         messages,
         add_generation_prompt=True,
         return_tensors="pt"
@@ -56,14 +53,18 @@ def run_llm(prompt, tokenizer, model, max_new_tokens):
 
     with torch.no_grad():
         outputs = model.generate(
-            input_ids=inputs["input_ids"],
-            attention_mask=inputs["attention_mask"],
+            input_ids=input_ids,
             max_new_tokens=max_new_tokens,
             do_sample=False,
             eos_token_id=tokenizer.eos_token_id,
         )
 
-    return tokenizer.decode(outputs[0][inputs["input_ids"].shape[-1]:],skip_special_tokens=True).strip()
+    response = tokenizer.decode(
+        outputs[0][input_ids.shape[-1]:],
+        skip_special_tokens=True
+    ).strip()
+
+    return response
 
 def parse_answers(raw):
     try:
@@ -78,7 +79,6 @@ def parse_answers(raw):
         for line in raw.split("\n")
         if line.strip()
     ]
-
 
 def main():
     args = parse_args()
@@ -145,7 +145,7 @@ def main():
             }, ensure_ascii=False) + "\n")
 
             fout.flush()
-            print(sid, "→", len(questions), "questions")
+            print(sid, ":", len(questions), "questions")
 
             if torch.cuda.is_available():
                 torch.cuda.empty_cache()
