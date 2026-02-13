@@ -62,10 +62,10 @@ def main():
 
             for pred, ref in zip(preds, refs):
 
-                if pred == "NOT_FOUND" and ref == "NOT_FOUND":
+                if pred == "No_Answer" and ref == "No_Answer":
                     continue
 
-                if pred == "NOT_FOUND" or ref == "NOT_FOUND":
+                if pred == "No_Answer" or ref == "No_Answer":
                     scores.append({"cos_sim": 0.0})
                     cos_list.append(0.0)
                     continue
