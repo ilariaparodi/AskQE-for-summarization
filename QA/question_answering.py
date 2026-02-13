@@ -27,7 +27,7 @@ Rules:
 - Answers must be short text spans copied verbatim from the text.
 - Do NOT repeat the question.
 - Do NOT repeat the article.
-- If the answer is not explicitly stated, output exactly: NOT_FOUND
+- If the answer is not explicitly stated, output exactly: No_Answer
 - Output ONLY a Python list of answers.
 
 Text:
