@@ -24,7 +24,7 @@ def parse_args():
 QA_PROMPT = """You are answering factual questions using ONLY the provided text.
 
 Rules:
-- Answers must be short spans grounded in the text.
+- Answers must be short spans copied verbatim from the text.
 - Do NOT repeat the question.
 - Do NOT repeat the article.
 - If the answer is not explicitly stated, output exactly: No_Answer
