@@ -36,9 +36,11 @@ Semantic Similarity: ```sentence-transformers/all-MiniLM-L6-v2```
 ### PubMed Summarization with DistilBART
 This script generates abstractive summaries for PubMed articles using `sshleifer/distilbart-cnn-12-6`.
 
-Requirements:
+Clone repository and install dependencies:
 ```bash
-pip install -r requirements.txt
+!git clone https://github.com/ilariaparodi/AskQE-for-summarization.git
+cd AskQE-for-summarization
+!pip install -r requirements.txt
 ```
 Usage:
 ```bash
