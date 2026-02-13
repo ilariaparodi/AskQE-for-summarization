@@ -5,19 +5,14 @@ import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from tqdm import tqdm
 
-
 def parse_args():
-    parser = argparse.ArgumentParser(
-        description="Extract atomic facts from PubMed articles using Qwen2.5-3B-Instruct"
-    )
+    parser = argparse.ArgumentParser(description="Extract atomic facts from PubMed articles using Qwen2.5-3B-Instruct")
     parser.add_argument("--input", type=str, required=True, help="Input JSON file (PubMed)")
     parser.add_argument("--output", type=str, required=True, help="Output JSONL file")
     return parser.parse_args()
 
-
 def main():
     args = parse_args()
-
     model_id = "Qwen/Qwen2.5-3B-Instruct"
 
     atomic_fact_prompt = """Task: You will be given an English biomedical text. Your goal is to identify a list of atomic facts from the sentence. Atomic fact is a short sentence conveying one piece of information. Output the list of atomic facts in Python list format without giving any additional explanation.
@@ -37,7 +32,6 @@ Atomic facts: ["The number of accessory proteins is unique depending on the spec
 Sentence: {{sentence}}
 Atomic facts:
 """
-
     tokenizer = AutoTokenizer.from_pretrained(model_id)
     model = AutoModelForCausalLM.from_pretrained(
         model_id,
@@ -63,22 +57,28 @@ Atomic facts:
                 {"role": "user", "content": prompt},
             ]
 
-            inputs = tokenizer.apply_chat_template(
+            prompt_text = tokenizer.apply_chat_template(
                 messages,
+                tokenize=False,
                 add_generation_prompt=True,
-                return_tensors="pt",
+            )
+
+            inputs = tokenizer(
+                prompt_text,
+                return_tensors="pt"
             ).to(model.device)
 
             with torch.no_grad():
                 outputs = model.generate(
-                    **inputs,
+                    input_ids=inputs["input_ids"],
+                    attention_mask=inputs["attention_mask"],
                     max_new_tokens=512,
                     eos_token_id=tokenizer.eos_token_id,
                 )
 
             response_ids = outputs[0][inputs["input_ids"].shape[-1]:]
             response = tokenizer.decode(response_ids, skip_special_tokens=True).strip()
-
+            
             try:
                 atomic_facts = json.loads(response.replace("'", '"'))
             except Exception:
@@ -89,7 +89,6 @@ Atomic facts:
 
             if torch.cuda.is_available():
                 torch.cuda.empty_cache()
-
 
 if __name__ == "__main__":
     main()
